@@ -9,11 +9,11 @@ const Navbar = () => {
   const { user, logOut } = useContext(AuthContext);
   const navLinks = (
     <>
-      <li>
+      {/* <li>
         <NavLink to={"/"}>Home</NavLink>
-      </li>
+      </li> */}
       <li>
-        <NavLink to={"/products"}>Products</NavLink>
+        <NavLink to={"/"}>Products</NavLink>
       </li>
       <li>
         <NavLink to={"/about"}>About</NavLink>
