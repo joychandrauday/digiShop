@@ -29,6 +29,7 @@ const client = new MongoClient(uri, {
 async function run() {
   const productCollection = client.db("digiShop").collection("products");
   const usersCollection = client.db("digiShop").collection("users");
+  const categoriesCollection = client.db("digiShop").collection("categories");
   try {
     // auth related api
     
@@ -74,6 +75,11 @@ async function run() {
     //products
     app.get("/products", async (req, res) => {
       const cursor = productCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+    app.get("/categories", async (req, res) => {
+      const cursor = categoriesCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
