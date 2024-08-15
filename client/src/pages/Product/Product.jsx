@@ -1,10 +1,10 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosPublic from "./../../hooks/useAxiosPublic";
 import useCategory from "../../hooks/useCategory";
 import useBrands from "../../hooks/useBrands";
-import { FaRegArrowAltCircleLeft, FaStar } from "react-icons/fa";
-import { FaRegArrowAltCircleRight } from "react-icons/fa";
+import { FaRegArrowAltCircleLeft, FaStar, FaRegArrowAltCircleRight } from "react-icons/fa";
+
 const Product = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -40,10 +40,10 @@ const Product = () => {
   }
 
   if (isError) {
-    return <div>Error fetching products data</div>;
+    return <div className="text-center text-red-600">Error fetching products data</div>;
   }
 
-  // Filter products based on the search query, selected category, brand, and price range
+  // Filter and sort products
   const filteredProducts = products
     .filter((product) =>
       product.productName.toLowerCase().includes(searchQuery.toLowerCase())
@@ -60,7 +60,6 @@ const Product = () => {
       return product.price >= minPrice && product.price <= maxPrice;
     });
 
-  // Sort products based on the selected sort option
   const sortedProducts = filteredProducts.slice().sort((a, b) => {
     switch (sortOption) {
       case "priceLowToHigh":
@@ -74,17 +73,12 @@ const Product = () => {
     }
   });
 
-  // Get the products for the current page
-  const paginatedProducts = useMemo(() => {
-    const startIndex = (currentPage - 1) * productsPerPage;
-    const endIndex = startIndex + productsPerPage;
-    return sortedProducts.slice(startIndex, endIndex);
-  }, [currentPage, sortedProducts, productsPerPage]);
-
-  // Calculate total number of pages
   const totalPages = Math.ceil(sortedProducts.length / productsPerPage);
 
-  // Pagination controls
+  const startIndex = (currentPage - 1) * productsPerPage;
+  const endIndex = startIndex + productsPerPage;
+  const paginatedProducts = sortedProducts.slice(startIndex, endIndex);
+
   const handlePreviousPage = () => {
     if (currentPage > 1) {
       setCurrentPage((prevPage) => prevPage - 1);
@@ -97,92 +91,91 @@ const Product = () => {
     }
   };
 
-  // Sort brands alphabetically
   const sortedBrands = allBrands?.sort((a, b) => a.localeCompare(b));
 
   return (
-    <div className="bg-gray-100 min-h-screen">
+    <div className="bg-gray-100 min-h-screen p-4 sm:p-8 lg:p-12">
       {/* Main Content */}
-      <main className="pt-8 px-6 py-10">
+      <main className="container mx-auto">
         {/* Search Bar */}
-        <div className="my-6 text-center">
+        <div className="my-6 flex justify-center">
           <input
             type="text"
             placeholder="Search for products..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="p-3 w-80 text-center border border-gray-300 rounded-md"
+            className="p-3 w-full max-w-md text-center border border-gray-300 rounded-lg shadow-md"
           />
         </div>
 
         {/* Filter Options */}
-        <div className="mb-6 text-center">
-          <label htmlFor="category" className="mr-2">
-            Category:
-          </label>
-          <select
-            id="category"
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="p-3 border border-gray-300 rounded-md"
-          >
-            <option value="">All Categories</option>
-            {allCategories &&
-              allCategories.map((category) => (
-                <option key={category} value={category}>
-                  {category.charAt(0).toUpperCase() + category.slice(1)}
-                </option>
-              ))}
-          </select>
+        <div className="mb-6 flex flex-wrap justify-center gap-4">
+          <div className="flex items-center gap-2">
+            <label htmlFor="category" className="text-lg font-semibold">Category:</label>
+            <select
+              id="category"
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="p-2 border border-gray-300 rounded-lg"
+            >
+              <option value="">All Categories</option>
+              {allCategories &&
+                allCategories.map((category) => (
+                  <option key={category} value={category}>
+                    {category.charAt(0).toUpperCase() + category.slice(1)}
+                  </option>
+                ))}
+            </select>
+          </div>
 
-          <label htmlFor="brand" className="mx-4">
-            Brand:
-          </label>
-          <select
-            id="brand"
-            value={selectedBrand}
-            onChange={(e) => setSelectedBrand(e.target.value)}
-            className="p-3 border border-gray-300 rounded-md"
-          >
-            <option value="">All Brands</option>
-            {sortedBrands &&
-              sortedBrands.map((brand) => (
-                <option key={brand} value={brand}>
-                  {brand.charAt(0).toUpperCase() + brand.slice(1)}
-                </option>
-              ))}
-          </select>
+          <div className="flex items-center gap-2">
+            <label htmlFor="brand" className="text-lg font-semibold">Brand:</label>
+            <select
+              id="brand"
+              value={selectedBrand}
+              onChange={(e) => setSelectedBrand(e.target.value)}
+              className="p-2 border border-gray-300 rounded-lg"
+            >
+              <option value="">All Brands</option>
+              {sortedBrands &&
+                sortedBrands.map((brand) => (
+                  <option key={brand} value={brand}>
+                    {brand.charAt(0).toUpperCase() + brand.slice(1)}
+                  </option>
+                ))}
+            </select>
+          </div>
 
-          <label htmlFor="price" className="mx-4">
-            Price Range:
-          </label>
-          <select
-            id="price"
-            value={priceRange}
-            onChange={(e) => setPriceRange(e.target.value)}
-            className="p-3 border border-gray-300 rounded-md"
-          >
-            <option value="">All Prices</option>
-            <option value="0-1000">0 BDT - 1000 BDT</option>
-            <option value="1001-20000">1001 BDT - 20000 BDT</option>
-            <option value="20001-70000">20001 BDT - 70000 BDT</option>
-            <option value="70001-200000">70001 BDT - 200000 BDT</option>
-          </select>
+          <div className="flex items-center gap-2">
+            <label htmlFor="price" className="text-lg font-semibold">Price Range:</label>
+            <select
+              id="price"
+              value={priceRange}
+              onChange={(e) => setPriceRange(e.target.value)}
+              className="p-2 border border-gray-300 rounded-lg"
+            >
+              <option value="">All Prices</option>
+              <option value="0-1000">0 BDT - 1000 BDT</option>
+              <option value="1001-20000">1001 BDT - 20000 BDT</option>
+              <option value="20001-70000">20001 BDT - 70000 BDT</option>
+              <option value="70001-200000">70001 BDT - 200000 BDT</option>
+            </select>
+          </div>
 
-          <label htmlFor="sort" className="mx-4">
-            Sort By:
-          </label>
-          <select
-            id="sort"
-            value={sortOption}
-            onChange={(e) => setSortOption(e.target.value)}
-            className="p-3 border border-gray-300 rounded-md"
-          >
-            <option value="">Default</option>
-            <option value="priceLowToHigh">Price: Low to High</option>
-            <option value="priceHighToLow">Price: High to Low</option>
-            <option value="dateNewestFirst">Date Added: Newest First</option>
-          </select>
+          <div className="flex items-center gap-2">
+            <label htmlFor="sort" className="text-lg font-semibold">Sort By:</label>
+            <select
+              id="sort"
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value)}
+              className="p-2 border border-gray-300 rounded-lg"
+            >
+              <option value="">Default</option>
+              <option value="priceLowToHigh">Price: Low to High</option>
+              <option value="priceHighToLow">Price: High to Low</option>
+              <option value="dateNewestFirst">Date Added: Newest First</option>
+            </select>
+          </div>
         </div>
 
         {/* Product Cards */}
@@ -191,33 +184,24 @@ const Product = () => {
             paginatedProducts.map((product) => (
               <div
                 key={product._id}
-                className="border border-gray-300 rounded-md m-4 p-4 bg-white w-80 shadow-md relative"
+                className="w-full sm:w-80 md:w-72 lg:w-80 xl:w-80 p-4 bg-white rounded-lg shadow-lg overflow-hidden m-2"
               >
                 <img
                   src={product.productImage}
                   alt={product.productName}
-                  className="w-full h-48 object-cover rounded-md"
+                  className="w-full h-48 object-cover rounded-lg"
                 />
-                <h2 className="text-lg font-semibold mt-2">
-                  {product.productName}
-                </h2>
-                <p className="text-gray-600 mt-1">{product.description}</p>
-                <p className="text-blue-600 font-semibold mt-1">
-                  Price: {product.price} BDT
-                </p>
-                <p className=" mt-1 absolute top-5 right-0">
-                  <div className="badge bg-primary text-white rounded-none">
-                    {product.category.charAt(0).toUpperCase() +
-                      product.category.slice(1)}
-                  </div>
-                </p>
-                <p className="text-yellow-500 mt-1 flex gap-1 items-center absolute top-0 right-4">
-                  <FaStar /> {product.ratings}
-                </p>
-                <p className="text-gray-500 mt-1">
-                  Created On:{" "}
-                  {new Date(product.creationDate).toLocaleDateString()}{" "}
-                  {new Date(product.creationDate).toLocaleTimeString()}
+                <h2 className="text-xl font-semibold mt-2 truncate">{product.productName}</h2>
+                <p className="text-gray-700 mt-1 truncate">{product.description}</p>
+                <p className="text-blue-600 font-semibold mt-1">Price: {product.price} BDT</p>
+                <div className="flex items-center mt-2">
+                  <div className="badge badge-primary">{product.category.charAt(0).toUpperCase() + product.category.slice(1)}</div>
+                  <p className="ml-auto text-yellow-500 flex items-center gap-1">
+                    <FaStar /> {product.ratings}
+                  </p>
+                </div>
+                <p className="text-gray-500 text-sm mt-1">
+                  Created On: {new Date(product.creationDate).toLocaleDateString()} {new Date(product.creationDate).toLocaleTimeString()}
                 </p>
               </div>
             ))
@@ -227,25 +211,20 @@ const Product = () => {
         </div>
 
         {/* Pagination */}
-        <div className="flex justify-center my-8">
+        <div className="flex justify-center my-8 gap-4">
           <button
             onClick={handlePreviousPage}
             disabled={currentPage === 1}
-            className="py-2 flex items-center gap-2 rounded-none px-4 bg-blue-900 text-white group mx-2"
+            className="px-4 py-2 bg-blue-900 text-white rounded-lg shadow-md disabled:opacity-50 transition-opacity"
           >
-            <FaRegArrowAltCircleLeft className="group-hover:-translate-x-1 transition-transform" />{" "}
-            Previous
+            <FaRegArrowAltCircleLeft className="inline-block mr-2" /> Previous
           </button>
-          <span className="mx-4">
-            Page {currentPage} of {totalPages}
-          </span>
           <button
             onClick={handleNextPage}
             disabled={currentPage === totalPages}
-            className="py-2 flex items-center gap-2 rounded-none px-4 bg-blue-900 text-white group mx-2"
+            className="px-4 py-2 bg-blue-900 text-white rounded-lg shadow-md disabled:opacity-50 transition-opacity"
           >
-            Next{" "}
-            <FaRegArrowAltCircleRight className="group-hover:translate-x-1 transition-transform" />
+            Next <FaRegArrowAltCircleRight className="inline-block ml-2" />
           </button>
         </div>
       </main>
