@@ -140,7 +140,7 @@ const Product = () => {
               {sortedBrands &&
                 sortedBrands.map((brand) => (
                   <option key={brand} value={brand}>
-                    {brand.charAt(0).toUpperCase() + brand.slice(1)}
+                    {brand.charAt(0).toLowerCase() + brand.slice(1)}
                   </option>
                 ))}
             </select>
@@ -184,7 +184,7 @@ const Product = () => {
             paginatedProducts.map((product) => (
               <div
                 key={product._id}
-                className="w-full sm:w-80 md:w-72 lg:w-80 xl:w-80 p-4 bg-white rounded-lg shadow-lg overflow-hidden m-2"
+                className="w-full sm:w-80 md:w-72 lg:w-80 xl:w-80 p-4 bg-white relative rounded-lg shadow-lg overflow-hidden m-2"
               >
                 <img
                   src={product.productImage}
@@ -194,9 +194,9 @@ const Product = () => {
                 <h2 className="text-xl font-semibold mt-2 truncate">{product.productName}</h2>
                 <p className="text-gray-700 mt-1 truncate">{product.description}</p>
                 <p className="text-blue-600 font-semibold mt-1">Price: {product.price} BDT</p>
-                <div className="flex items-center mt-2">
-                  <div className="badge badge-primary">{product.category.charAt(0).toUpperCase() + product.category.slice(1)}</div>
-                  <p className="ml-auto text-yellow-500 flex items-center gap-1">
+                <div className="flex  flex-col-reverse items-center mt-2 absolute top-0 right-0">
+                  <div className="badge rounded-none badge-primary">{product.category.charAt(0).toUpperCase() + product.category.slice(1)}</div>
+                  <p className="ml-auto text-yellow-500 flex items-center gap-1 pr-2">
                     <FaStar /> {product.ratings}
                   </p>
                 </div>
@@ -219,6 +219,9 @@ const Product = () => {
           >
             <FaRegArrowAltCircleLeft className="inline-block mr-2" /> Previous
           </button>
+          <div className="mx-3 flex items-center">
+            Page {currentPage} of {totalPages}.
+          </div>
           <button
             onClick={handleNextPage}
             disabled={currentPage === totalPages}
