@@ -40,7 +40,7 @@ Welcome to the DigiShop frontend repository! This project is the client-side app
     npm run dev
     ```
 
-4.  Available commands
+## available-scripts
 
     ```bash
     npm run dev /
@@ -48,9 +48,16 @@ Welcome to the DigiShop frontend repository! This project is the client-side app
     nodemon index.js
     ```
 
-5.  Environment variables
+## environment-variables
 
     ```bash
     DB_USER=your_mongodb_database_user
     DB_PASS=your_mongodb_database_password
-    VITE_API= BACKEND_API_MAIN
+    VITE_API_URL= BACKEND_API_MAIN
+    VITE_apiKey=FIREBASE_apiKey
+    VITE_authDomain=FIREBASE_authDomain
+    VITE_projectId=FIREBASE_projectId
+    VITE_storageBucket=FIREBASE_storageBucket
+    VITE_messagingSenderId=FIREBASE_messagingSenderId
+    VITE_appId=FIREBASE_appId
+    VITE_API_URL=FIREBASE_API_URL
