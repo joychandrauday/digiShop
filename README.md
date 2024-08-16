@@ -36,3 +36,10 @@ Welcome to the DigiShop frontend repository! This project is the client-side app
 
     ```bash
     npm run dev
+3. Available commands
+
+    ```bash
+    npm run dev
+    
+    ```bash
+    npm run build
