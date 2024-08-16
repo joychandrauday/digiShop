@@ -194,9 +194,9 @@ const Product = () => {
                 <h2 className="text-xl font-semibold mt-2 truncate">{product.productName}</h2>
                 <p className="text-gray-700 mt-1 truncate">{product.description}</p>
                 <p className="text-blue-600 font-semibold mt-1">Price: {product.price} BDT</p>
-                <div className="flex  flex-col-reverse items-center mt-2 absolute top-0 right-0">
+                <div className="flex  flex-col-reverse items-end mt-2 absolute top-0 right-0">
                   <div className="badge rounded-none badge-primary">{product.category.charAt(0).toUpperCase() + product.category.slice(1)}</div>
-                  <p className="ml-auto text-yellow-500 flex items-center gap-1 pr-2">
+                  <p className="ml-auto text-warning font-bold flex items-center gap-1 pr-2 badge rounded-none badge-primary">
                     <FaStar /> {product.ratings}
                   </p>
                 </div>
@@ -215,9 +215,9 @@ const Product = () => {
           <button
             onClick={handlePreviousPage}
             disabled={currentPage === 1}
-            className="px-4 py-2 bg-blue-900 text-white rounded-lg shadow-md disabled:opacity-50 transition-opacity"
+            className="px-4 btn py-2 bg-blue-900 text-white rounded-lg shadow-md disabled:opacity-50 transition-opacity group"
           >
-            <FaRegArrowAltCircleLeft className="inline-block mr-2" /> Previous
+            <FaRegArrowAltCircleLeft className="inline-block mr-2 group-hover:-translate-x-2 transition-transform" /> Previous
           </button>
           <div className="mx-3 flex items-center">
             Page {currentPage} of {totalPages}.
@@ -225,9 +225,9 @@ const Product = () => {
           <button
             onClick={handleNextPage}
             disabled={currentPage === totalPages}
-            className="px-4 py-2 bg-blue-900 text-white rounded-lg shadow-md disabled:opacity-50 transition-opacity"
+            className="px-4 btn py-2 bg-blue-900 text-white rounded-lg shadow-md disabled:opacity-50 transition-opacity group"
           >
-            Next <FaRegArrowAltCircleRight className="inline-block ml-2" />
+            Next <FaRegArrowAltCircleRight className="inline-block ml-2 group-hover:translate-x-2 transition-transform" />
           </button>
         </div>
       </main>

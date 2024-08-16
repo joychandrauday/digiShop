@@ -35,8 +35,7 @@ const AddProduct = () => {
       })
       .then((res) => {
         if (res.data) {
-          toast.success("transaction successfull...");
-          window.reload();
+          toast.success("Yopur product has been added...");
         } else {
           toast.error("Transaction failed. Please check your credentials."); // Notify user if login fails
         }
