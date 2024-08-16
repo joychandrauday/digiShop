@@ -28,3 +28,11 @@ Welcome to the DigiShop frontend repository! This project is the client-side app
    ```bash
    git clone https://github.com/joychandrauday/digiShop
    cd client
+2. install dependencies
+
+    ```bash
+    npm install
+3. run projects
+
+    ```bash
+    npm run dev
