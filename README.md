@@ -9,8 +9,6 @@ Welcome to the DigiShop frontend repository! This project is the client-side app
 - [Running the Project](#running-the-project)
 - [Available Scripts](#available-scripts)
 - [Environment Variables](#environment-variables)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Technologies Used
 
@@ -23,23 +21,36 @@ Welcome to the DigiShop frontend repository! This project is the client-side app
 
 ## Installation
 
-1. Clone the repository:
+1.  Clone the repository:
 
-   ```bash
-   git clone https://github.com/joychandrauday/digiShop
-   cd client
-2. install dependencies
+    ```bash
+    git clone https://github.com/joychandrauday/digiShop
+    cd client
+    ```
+
+2.  install dependencies
 
     ```bash
     npm install
-3. run projects
+    ```
+
+3.  run projects
 
     ```bash
     npm run dev
-3. Available commands
+    ```
+
+4.  Available commands
 
     ```bash
-    npm run dev
-    
+    npm run dev /
+    npm run build /
+    nodemon index.js
+    ```
+
+5.  Environment variables
+
     ```bash
-    npm run build
+    DB_USER=your_mongodb_database_user
+    DB_PASS=your_mongodb_database_password
+    VITE_API= BACKEND_API_MAIN
