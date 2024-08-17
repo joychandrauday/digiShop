@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosPublic from "./../../hooks/useAxiosPublic";
 import useCategory from "../../hooks/useCategory";
@@ -19,16 +19,39 @@ const Product = () => {
   const allCategories = categories[0]?.categories;
   const allBrands = useBrands();
 
+  // Refetch data whenever filter or sort options change
+  useEffect(() => {
+    setCurrentPage(1); // Reset to first page whenever a filter or sort is changed
+  }, [searchQuery, selectedCategory, selectedBrand, priceRange, sortOption]);
+
   const {
-    data: products = [],
+    data: productData,
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["products"],
+    queryKey: [
+      "products",
+      searchQuery,
+      selectedCategory,
+      selectedBrand,
+      priceRange,
+      sortOption,
+      currentPage,
+    ],
     queryFn: async () => {
-      const res = await axiosPublic.get("/products");
+      const params = {
+        searchQuery,
+        category: selectedCategory,
+        brand: selectedBrand,
+        priceRange,
+        sortOption,
+        page: currentPage,
+        limit: productsPerPage,
+      };
+      const res = await axiosPublic.get("/products", { params });
       return res.data;
     },
+    keepPreviousData: true,
   });
 
   if (isLoading) {
@@ -43,41 +66,7 @@ const Product = () => {
     return <div className="text-center text-red-600">Error fetching products data</div>;
   }
 
-  // Filter and sort products
-  const filteredProducts = products
-    .filter((product) =>
-      product.productName.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    .filter((product) =>
-      selectedCategory ? product.category === selectedCategory : true
-    )
-    .filter((product) =>
-      selectedBrand ? product.brand === selectedBrand : true
-    )
-    .filter((product) => {
-      if (!priceRange) return true;
-      const [minPrice, maxPrice] = priceRange.split("-").map(Number);
-      return product.price >= minPrice && product.price <= maxPrice;
-    });
-
-  const sortedProducts = filteredProducts.slice().sort((a, b) => {
-    switch (sortOption) {
-      case "priceLowToHigh":
-        return a.price - b.price;
-      case "priceHighToLow":
-        return b.price - a.price;
-      case "dateNewestFirst":
-        return new Date(b.creationDate) - new Date(a.creationDate);
-      default:
-        return 0;
-    }
-  });
-
-  const totalPages = Math.ceil(sortedProducts.length / productsPerPage);
-
-  const startIndex = (currentPage - 1) * productsPerPage;
-  const endIndex = startIndex + productsPerPage;
-  const paginatedProducts = sortedProducts.slice(startIndex, endIndex);
+  const { allproducts, totalPages } = productData;
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
@@ -90,9 +79,6 @@ const Product = () => {
       setCurrentPage((prevPage) => prevPage + 1);
     }
   };
-
-  const sortedBrands = allBrands?.sort((a, b) => a.localeCompare(b));
-
   return (
     <div className="bg-gray-100 min-h-screen p-4 sm:p-8 lg:p-12">
       {/* Main Content */}
@@ -137,8 +123,8 @@ const Product = () => {
               className="p-2 border border-gray-300 rounded-lg"
             >
               <option value="">All Brands</option>
-              {sortedBrands &&
-                sortedBrands.map((brand) => (
+              {allBrands &&
+                allBrands.map((brand) => (
                   <option key={brand} value={brand}>
                     {brand.charAt(0).toLowerCase() + brand.slice(1)}
                   </option>
@@ -180,8 +166,8 @@ const Product = () => {
 
         {/* Product Cards */}
         <div className="flex flex-wrap justify-center">
-          {paginatedProducts.length > 0 ? (
-            paginatedProducts.map((product) => (
+          {allproducts.length > 0 ? (
+            allproducts.map((product) => (
               <div
                 key={product._id}
                 className="w-full sm:w-80 md:w-72 lg:w-80 xl:w-80 p-4 bg-white relative rounded-lg shadow-lg overflow-hidden m-2"

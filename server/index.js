@@ -77,7 +77,7 @@ async function run() {
         .json({ message: "User registered successfully", user: newUser });
     });
     //products
-    app.get("/products", async (req, res) => {
+    app.get("/allproducts", async (req, res) => {
       const cursor = productCollection.find();
       const result = await cursor.toArray();
       res.send(result);
@@ -89,6 +89,60 @@ async function run() {
         .status(201)
         .json({ message: "Product added successfully", product: newProduct });
     });
+    app.get("/products", async (req, res) => {
+      const { searchQuery, category, brand, priceRange, sortOption, page = 1, limit = 9 } = req.query;
+    
+      const parsedPage = parseInt(page, 10) || 1; // Ensure page is an integer
+      const parsedLimit = parseInt(limit, 10) || 9; // Ensure limit is an integer
+    
+      const query = {};
+    
+      if (searchQuery) {
+        query.productName = { $regex: searchQuery, $options: "i" };
+      }
+    
+      if (category) {
+        query.category = category;
+      }
+    
+      if (brand) {
+        query.brand = brand;
+      }
+    
+      if (priceRange) {
+        const [min, max] = priceRange.split("-").map(Number);
+        query.price = { $gte: min, $lte: max };
+      }
+    
+      let sort = {};
+      if (sortOption === "priceLowToHigh") {
+        sort.price = 1;
+      } else if (sortOption === "priceHighToLow") {
+        sort.price = -1;
+      } else if (sortOption === "dateNewestFirst") {
+        sort.creationDate = -1;
+      }
+    
+      try {
+        const totalProducts = await productCollection.countDocuments(query);
+        const totalPages = Math.ceil(totalProducts / parsedLimit);
+    
+        const allproducts = await productCollection.find(query)
+          .sort(sort)
+          .skip((parsedPage - 1) * parsedLimit)
+          .limit(parsedLimit)
+          .toArray(); // Convert cursor to array
+    
+        res.json({ allproducts, totalPages });
+      } catch (err) {
+        res.status(500).json({ error: "An error occurred while fetching products" });
+      }
+    });
+    
+    
+    
+
+    //
     app.get("/categories", async (req, res) => {
       const cursor = categoriesCollection.find();
       const result = await cursor.toArray();
