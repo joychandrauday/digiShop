@@ -3,7 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import useAxiosPublic from "./../../hooks/useAxiosPublic";
 import useCategory from "../../hooks/useCategory";
 import useBrands from "../../hooks/useBrands";
-import { FaRegArrowAltCircleLeft, FaStar, FaRegArrowAltCircleRight } from "react-icons/fa";
+import cursor from "../../assets/images/icons8-cursor-188.png"
+import {
+  FaRegArrowAltCircleLeft,
+  FaStar,
+  FaRegArrowAltCircleRight,
+  FaSearch,
+} from "react-icons/fa";
 
 const Product = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -56,14 +62,20 @@ const Product = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <span className="loading loading-spinner loading-md"></span>
+      <div className="min-h-screen flex items-center justify-center backdrop-blur">
+        <div className="wraap">
+          <img src={cursor} alt="" className="animate-bounce"/>
+        </div>
       </div>
     );
   }
 
   if (isError) {
-    return <div className="text-center text-red-600">Error fetching products data</div>;
+    return (
+      <div className="text-center text-red-600">
+        Error fetching products data
+      </div>
+    );
   }
 
   const { allproducts, totalPages } = productData;
@@ -79,25 +91,43 @@ const Product = () => {
       setCurrentPage((prevPage) => prevPage + 1);
     }
   };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const searchText = e.target.searchtext.value;
+    setSearchQuery(searchText);
+  };
   return (
     <div className="bg-gray-100 min-h-screen p-4 sm:p-8 lg:p-12">
       {/* Main Content */}
       <main className="container mx-auto">
         {/* Search Bar */}
-        <div className="my-6 flex justify-center">
-          <input
-            type="text"
-            placeholder="Search for products..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="p-3 w-full max-w-md text-center border border-gray-300 rounded-lg shadow-md"
-          />
-        </div>
+        <form action="" onSubmit={handleSubmit}>
+          <div className="my-6 flex justify-center items-center relative gap-1">
+            <input
+              type="text"
+              name="searchtext"
+              placeholder={
+                searchQuery
+                  ? `all products related to ${searchQuery}.`
+                  : "Search for products..."
+              }
+              className="p-3 w-full max-w-md text-center border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all duration-300 ease-in-out transform hover:-translate-y-1"
+            />
+            <button
+              type="submit"
+              className="transform p-2 bg-blue-900 text-white rounded-full shadow-md hover:bg-blue-700 transition-all duration-300 ease-in-out hover:scale-110 focus:outline-none"
+            >
+              <FaSearch />
+            </button>
+          </div>
+        </form>
 
         {/* Filter Options */}
         <div className="mb-6 flex flex-wrap justify-center gap-4">
           <div className="flex items-center gap-2">
-            <label htmlFor="category" className="text-lg font-semibold">Category:</label>
+            <label htmlFor="category" className="text-lg font-semibold">
+              Category:
+            </label>
             <select
               id="category"
               value={selectedCategory}
@@ -115,7 +145,9 @@ const Product = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <label htmlFor="brand" className="text-lg font-semibold">Brand:</label>
+            <label htmlFor="brand" className="text-lg font-semibold">
+              Brand:
+            </label>
             <select
               id="brand"
               value={selectedBrand}
@@ -133,7 +165,9 @@ const Product = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <label htmlFor="price" className="text-lg font-semibold">Price Range:</label>
+            <label htmlFor="price" className="text-lg font-semibold">
+              Price Range:
+            </label>
             <select
               id="price"
               value={priceRange}
@@ -149,7 +183,9 @@ const Product = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <label htmlFor="sort" className="text-lg font-semibold">Sort By:</label>
+            <label htmlFor="sort" className="text-lg font-semibold">
+              Sort By:
+            </label>
             <select
               id="sort"
               value={sortOption}
@@ -177,17 +213,28 @@ const Product = () => {
                   alt={product.productName}
                   className="w-full h-48 object-cover rounded-lg"
                 />
-                <h2 className="text-xl font-semibold mt-2 truncate">{product.productName}</h2>
-                <p className="text-gray-700 mt-1 truncate">{product.description}</p>
-                <p className="text-blue-600 font-semibold mt-1">Price: {product.price} BDT</p>
+                <h2 className="text-xl font-semibold mt-2 truncate">
+                  {product.productName}
+                </h2>
+                <p className="text-gray-700 mt-1 truncate">
+                  {product.description}
+                </p>
+                <p className="text-blue-600 font-semibold mt-1">
+                  Price: {product.price} BDT
+                </p>
                 <div className="flex  flex-col-reverse items-end mt-2 absolute top-0 right-0">
-                  <div className="badge rounded-none badge-primary">{product.category.charAt(0).toUpperCase() + product.category.slice(1)}</div>
+                  <div className="badge rounded-none badge-primary">
+                    {product.category.charAt(0).toUpperCase() +
+                      product.category.slice(1)}
+                  </div>
                   <p className="ml-auto text-warning font-bold flex items-center gap-1 pr-2 badge rounded-none badge-primary">
                     <FaStar /> {product.ratings}
                   </p>
                 </div>
                 <p className="text-gray-500 text-sm mt-1">
-                  Created On: {new Date(product.creationDate).toLocaleDateString()} {new Date(product.creationDate).toLocaleTimeString()}
+                  Created On:{" "}
+                  {new Date(product.creationDate).toLocaleDateString()}{" "}
+                  {new Date(product.creationDate).toLocaleTimeString()}
                 </p>
               </div>
             ))
@@ -203,7 +250,8 @@ const Product = () => {
             disabled={currentPage === 1}
             className="px-4 btn py-2 bg-blue-900 text-white rounded-lg shadow-md disabled:opacity-50 transition-opacity group"
           >
-            <FaRegArrowAltCircleLeft className="inline-block mr-2 group-hover:-translate-x-2 transition-transform" /> Previous
+            <FaRegArrowAltCircleLeft className="inline-block mr-2 group-hover:-translate-x-2 transition-transform" />{" "}
+            Previous
           </button>
           <div className="mx-3 flex items-center">
             Page {currentPage} of {totalPages}.
@@ -213,7 +261,8 @@ const Product = () => {
             disabled={currentPage === totalPages}
             className="px-4 btn py-2 bg-blue-900 text-white rounded-lg shadow-md disabled:opacity-50 transition-opacity group"
           >
-            Next <FaRegArrowAltCircleRight className="inline-block ml-2 group-hover:translate-x-2 transition-transform" />
+            Next{" "}
+            <FaRegArrowAltCircleRight className="inline-block ml-2 group-hover:translate-x-2 transition-transform" />
           </button>
         </div>
       </main>
